@@ -1,0 +1,324 @@
+:root {
+  --purple-primary: #A7AAE1;
+  --purple-dark: #696FC7;
+  --purple-light: #E8D4B7;
+  --purple-neon: #696FC7;
+  --bg-dark: #F5F5F5;
+  --bg-card: #FFFFFF;
+  --text-primary: #2D2D2D;
+  --text-secondary: #696FC7;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #F5D3C4 0%, #E8D4B7 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  border: 3px solid var(--purple-primary);
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 
+    0 4px 20px rgba(105, 111, 199, 0.15),
+    inset 0 0 20px rgba(167, 170, 225, 0.05);
+  position: relative;
+}
+
+.auth-title {
+  font-size: 2.5rem;
+  color: var(--purple-dark);
+  text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(105, 111, 199, 0.2);
+  letter-spacing: 3px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-size: 0.9rem;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--purple-light);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(245, 243, 250, 0.5);
+  border: 2px solid var(--purple-primary);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--purple-dark);
+  box-shadow: 0 0 10px rgba(105, 111, 199, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-primary) 100%);
+  border: 2px solid var(--purple-dark);
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(105, 111, 199, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(105, 111, 199, 0.3);
+  border-color: var(--purple-primary);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.auth-link a {
+  color: var(--purple-dark);
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.auth-link a:hover {
+  color: var(--purple-primary);
+  text-decoration: underline;
+}
+
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border: 2px solid #dc3545;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: #dc3545;
+  text-align: center;
+  font-weight: bold;
+}
+
+.success-message {
+  background: rgba(40, 167, 69, 0.1);
+  border: 2px solid #28a745;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: #28a745;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Progress Circle */
+.progress-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: conic-gradient(var(--purple-neon) 0deg, var(--bg-dark) 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.progress-circle::before {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  position: absolute;
+}
+
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--purple-neon);
+}
+
+/* XP Progress Bar */
+.xp-bar-container {
+  width: 100%;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--purple-primary);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple-primary), var(--purple-neon));
+  border-radius: 15px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 15px rgba(218, 112, 214, 0.6);
+}
+
+.xp-bar-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+/* Flame Animation */
+.flame {
+  font-size: 2rem;
+  display: inline-block;
+  animation: flicker 1.5s infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { 
+    transform: scale(1) rotate(-5deg);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.1) rotate(5deg);
+    filter: brightness(1.2);
+  }
+}
+
+.flame-off {
+  font-size: 2rem;
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+/* Calendar */
+.calendar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 15px 0;
+}
+
+.calendar-day {
+  min-width: 60px;
+  height: 80px;
+  background: var(--bg-card);
+  border: 2px solid var(--purple-primary);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px;
+}
+
+.calendar-day-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.calendar-day-status {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+
+.status-complete {
+  background: rgba(0, 255, 0, 0.3);
+  border-color: limegreen !important;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.status-partial {
+  background: rgba(255, 255, 0, 0.3);
+  border-color: gold !important;
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+}
+
+.status-incomplete {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: crimson !important;
+}
+
+/* Retro scan lines effect */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 3px
+  );
+  pointer-events: none;
+  border-radius: 10px;
+}
