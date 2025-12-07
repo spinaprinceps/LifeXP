@@ -5,6 +5,7 @@ const { Pool } = require('pg');
 const cron = require('node-cron');
 const authRoutes = require('./routes/auth');
 const habitRoutes = require('./routes/habits');
+const todoRoutes = require('./routes/todos');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
+app.use('/api/todos', todoRoutes);
 
 const {PGHOST,PGDATABASE,PGUSER,PGPASSWORD}=process.env;
 const pool=new Pool({

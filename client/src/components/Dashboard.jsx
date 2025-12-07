@@ -10,6 +10,7 @@ import ProgressBar from './ProgressBar';
 import StreakDisplay from './StreakDisplay';
 import HabitForm from './HabitForm';
 import HabitList from './HabitList';
+import TodoSection from './TodoSection';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -18,6 +19,7 @@ function Dashboard() {
   const [stats, setStats] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
+  const [activeTab, setActiveTab] = useState('habits');
   const [formData, setFormData] = useState({
     name: '',
     frequency: 'daily',
@@ -169,33 +171,58 @@ function Dashboard() {
         {/* Navbar */}
         <Navbar onLogout={handleLogout} />
 
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: '320px 1fr',
-          gap: '20px'
-        }}>
-          {/* LEFT SIDEBAR */}
-          <div>
-            <ProfileSection user={user} stats={stats} />
-            <MonthlyCalendar userId={user.id} />
-            <StatsButtons />
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex gap-4 mb-5">
+          <button
+            onClick={() => setActiveTab('habits')}
+            className={`px-6 py-3 rounded-lg font-mono font-bold uppercase tracking-wide transition-all ${
+              activeTab === 'habits'
+                ? 'bg-primary-dark text-white border-2 border-primary-dark'
+                : 'bg-white text-primary-dark border-2 border-primary hover:bg-primary-light'
+            }`}
+          >
+            🎯 HABITS
+          </button>
+          <button
+            onClick={() => setActiveTab('todos')}
+            className={`px-6 py-3 rounded-lg font-mono font-bold uppercase tracking-wide transition-all ${
+              activeTab === 'todos'
+                ? 'bg-primary-dark text-white border-2 border-primary-dark'
+                : 'bg-white text-primary-dark border-2 border-primary hover:bg-primary-light'
+            }`}
+          >
+            📋 TASKS
+          </button>
+        </div>
 
-          {/* RIGHT SECTION */}
-          <div>
-            {message && (
-              <div className={message.includes('XP') || message.includes('🎉') ? 'success-message' : 'error-message'} 
-                   style={{ marginBottom: '20px' }}>
-                {message}
-              </div>
-            )}
+        {activeTab === 'habits' && (
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: '320px 1fr',
+            gap: '20px'
+          }}>
+            {/* LEFT SIDEBAR */}
+            <div>
+              <ProfileSection user={user} stats={stats} />
+              <MonthlyCalendar userId={user.id} />
+              <StatsButtons />
+            </div>
 
-            {stats && (
-              <>
-                <ProgressBar 
-                  currentXp={stats.xp} 
-                  nextLevelXp={stats.nextLevelXp} 
-                  level={stats.level} 
+            {/* RIGHT SECTION */}
+            <div>
+              {message && (
+                <div className={message.includes('XP') || message.includes('🎉') ? 'success-message' : 'error-message'} 
+                     style={{ marginBottom: '20px' }}>
+                  {message}
+                </div>
+              )}
+
+              {stats && (
+                <>
+                  <ProgressBar 
+                    currentXp={stats.xp} 
+                    nextLevelXp={stats.nextLevelXp} 
+                    level={stats.level} 
                 />
                 <StreakDisplay 
                   streak={stats.streak} 
@@ -238,6 +265,13 @@ function Dashboard() {
             />
           </div>
         </div>
+        )}
+
+        {activeTab === 'todos' && (
+          <div>
+            <TodoSection />
+          </div>
+        )}
       </div>
     </div>
   );
