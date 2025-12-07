@@ -1,5 +1,5 @@
 const express = require('express');
-const cors=require("cors");
+const cors = require("cors");
 require('dotenv').config();
 const { Pool } = require('pg');
 const cron = require('node-cron');
@@ -10,7 +10,14 @@ const journalRoutes = require('./routes/journal');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// CORS configuration for production
+const corsOptions = {
+  origin: process.env.CLIENT_URL || '*',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

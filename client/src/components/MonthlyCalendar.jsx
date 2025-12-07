@@ -14,7 +14,8 @@ function MonthlyCalendar({ userId }) {
       const year = currentMonth.getFullYear();
       const month = currentMonth.getMonth() + 1;
       
-      const response = await fetch(`http://localhost:3000/api/habits/monthly-stats/${userId}/${year}/${month}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_BASE}/api/habits/monthly-stats/${userId}/${year}/${month}`);
       const data = await response.json();
       
       // Extract days where all habits were completed

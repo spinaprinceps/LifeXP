@@ -1,0 +1,37 @@
+services:
+  # Backend API Server (connects to external Neon database)
+  - type: web
+    name: lifexp-backend
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Neon database credentials
+      - key: PGHOST
+        value: ep-broad-pond-ah8l8lpx-pooler.c-3.us-east-1.aws.neon.tech
+      - key: PGDATABASE
+        value: neondb
+      - key: PGUSER
+        value: neondb_owner
+      - key: PGPASSWORD
+        value: npg_JgDUWBKvs50y
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://lifexp-frontend.onrender.com
+        
+  # Frontend Static Site
+  - type: web
+    name: lifexp-frontend
+    env: static
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://lifexp-backend.onrender.com
