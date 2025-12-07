@@ -11,6 +11,7 @@ import StreakDisplay from './StreakDisplay';
 import HabitForm from './HabitForm';
 import HabitList from './HabitList';
 import TodoSection from './TodoSection';
+import JournalSection from './JournalSection';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -193,6 +194,16 @@ function Dashboard() {
           >
             📋 TASKS
           </button>
+          <button
+            onClick={() => setActiveTab('journal')}
+            className={`px-6 py-3 rounded-lg font-mono font-bold uppercase tracking-wide transition-all ${
+              activeTab === 'journal'
+                ? 'bg-primary-dark text-white border-2 border-primary-dark'
+                : 'bg-white text-primary-dark border-2 border-primary hover:bg-primary-light'
+            }`}
+          >
+            📝 JOURNAL
+          </button>
         </div>
 
         {activeTab === 'habits' && (
@@ -270,6 +281,12 @@ function Dashboard() {
         {activeTab === 'todos' && (
           <div>
             <TodoSection />
+          </div>
+        )}
+
+        {activeTab === 'journal' && (
+          <div>
+            <JournalSection />
           </div>
         )}
       </div>
