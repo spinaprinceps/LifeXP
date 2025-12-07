@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/habits` : 'http://localhost:3000/api/habits';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = `${API_BASE}/api/habits`;
 
 export const createHabit = async (user_id, name, frequency, category) => {
   const response = await axios.post(`${API_URL}/create`, { user_id, name, frequency, category });
