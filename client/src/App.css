@@ -1,3 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #696FC7;
+  --color-primary-light: #A7AAE1;
+  --color-primary-dark: #5A5FB8;
+  --color-peach: #F5D3C4;
+  --color-tan: #E8D4B7;
+  --color-text-primary: #2D2D2D;
+  --font-mono: "Courier New", monospace;
+}
+
 :root {
   --purple-primary: #A7AAE1;
   --purple-dark: #696FC7;

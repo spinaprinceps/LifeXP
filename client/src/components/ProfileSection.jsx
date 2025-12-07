@@ -69,7 +69,7 @@ function ProfileSection({ user, stats }) {
             top: '130px',
             left: '50%',
             transform: 'translateX(-50%)',
-            background: 'var(--bg-card)',
+            background: '#FFFFFF',
             border: '2px solid var(--purple-primary)',
             borderRadius: '5px',
             padding: '10px',
@@ -82,10 +82,10 @@ function ProfileSection({ user, stats }) {
                 width: '100%',
                 padding: '8px',
                 marginBottom: '5px',
-                background: 'var(--purple-primary)',
+                background: 'var(--purple-dark)',
                 border: 'none',
                 borderRadius: '3px',
-                color: 'var(--text-primary)',
+                color: '#FFFFFF',
                 cursor: 'pointer',
                 fontFamily: 'Courier New, monospace'
               }}
@@ -98,10 +98,10 @@ function ProfileSection({ user, stats }) {
                 style={{
                   width: '100%',
                   padding: '8px',
-                  background: 'transparent',
-                  border: '2px solid crimson',
+                  background: '#FFFFFF',
+                  border: '2px solid #dc3545',
                   borderRadius: '3px',
-                  color: 'var(--text-primary)',
+                  color: '#dc3545',
                   cursor: 'pointer',
                   fontFamily: 'Courier New, monospace'
                 }}

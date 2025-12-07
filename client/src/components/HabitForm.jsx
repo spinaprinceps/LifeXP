@@ -1,7 +1,7 @@
 function HabitForm({ formData, setFormData, onSubmit, onCancel, isEditing }) {
   return (
     <div className="auth-card" style={{ marginBottom: '20px' }}>
-      <h2 style={{ color: 'var(--purple-neon)', marginBottom: '20px' }}>
+      <h2 style={{ color: 'var(--purple-dark)', marginBottom: '20px' }}>
         {isEditing ? 'EDIT HABIT' : 'CREATE HABIT'}
       </h2>
       <form onSubmit={onSubmit}>

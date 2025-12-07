@@ -12,7 +12,7 @@ function HabitItem({ habit, onComplete, onUncomplete, onEdit, onDelete, isComple
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: 1 }}>
           <h3 style={{ 
-            color: isCompleted ? 'var(--purple-neon)' : 'var(--text-primary)', 
+            color: isCompleted ? 'var(--purple-dark)' : 'var(--text-primary)', 
             marginBottom: '5px',
             textDecoration: isCompleted ? 'line-through' : 'none'
           }}>
@@ -27,9 +27,9 @@ function HabitItem({ habit, onComplete, onUncomplete, onEdit, onDelete, isComple
             <button
               onClick={() => onComplete(habit.id)}
               style={{
-                background: 'linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%)',
-                border: '2px solid var(--purple-neon)',
-                color: 'var(--text-primary)',
+                background: 'var(--purple-dark)',
+                border: '2px solid var(--purple-dark)',
+                color: '#FFFFFF',
                 padding: '8px 16px',
                 borderRadius: '5px',
                 cursor: 'pointer',
@@ -43,9 +43,9 @@ function HabitItem({ habit, onComplete, onUncomplete, onEdit, onDelete, isComple
             <button
               onClick={() => onUncomplete(habit.id)}
               style={{
-                background: 'transparent',
-                border: '2px solid var(--purple-neon)',
-                color: 'var(--text-primary)',
+                background: '#FFFFFF',
+                border: '2px solid var(--purple-primary)',
+                color: 'var(--purple-dark)',
                 padding: '8px 16px',
                 borderRadius: '5px',
                 cursor: 'pointer',
@@ -58,9 +58,9 @@ function HabitItem({ habit, onComplete, onUncomplete, onEdit, onDelete, isComple
           <button
             onClick={() => onEdit(habit)}
             style={{
-              background: 'transparent',
-              border: '2px solid var(--purple-light)',
-              color: 'var(--text-primary)',
+              background: '#FFFFFF',
+              border: '2px solid var(--purple-primary)',
+              color: 'var(--purple-dark)',
               padding: '8px 16px',
               borderRadius: '5px',
               cursor: 'pointer',
@@ -72,9 +72,9 @@ function HabitItem({ habit, onComplete, onUncomplete, onEdit, onDelete, isComple
           <button
             onClick={() => onDelete(habit.id)}
             style={{
-              background: 'transparent',
-              border: '2px solid crimson',
-              color: 'var(--text-primary)',
+              background: '#FFFFFF',
+              border: '2px solid #dc3545',
+              color: '#dc3545',
               padding: '8px 16px',
               borderRadius: '5px',
               cursor: 'pointer',

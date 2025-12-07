@@ -4,7 +4,7 @@ function HabitList({ habits, completedHabitIds, onComplete, onUncomplete, onEdit
   return (
     <div>
       <h2 style={{ 
-        color: 'var(--purple-neon)', 
+        color: 'var(--purple-dark)', 
         marginBottom: '15px', 
         fontSize: '1.5rem' 
       }}>

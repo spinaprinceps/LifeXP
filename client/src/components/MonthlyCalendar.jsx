@@ -50,7 +50,15 @@ function MonthlyCalendar({ userId }) {
   const days = [];
   // Add empty cells for days before month starts
   for (let i = 0; i < startingDayOfWeek; i++) {
-    days.push(<div key={`empty-${i}`} style={{ padding: '8px' }} />);
+    days.push(
+      <div 
+        key={`empty-${i}`} 
+        style={{ 
+          padding: '8px',
+          minHeight: '60px'
+        }} 
+      />
+    );
   }
   // Add days of month
   for (let day = 1; day <= daysInMonth; day++) {
@@ -64,10 +72,15 @@ function MonthlyCalendar({ userId }) {
           padding: '8px',
           textAlign: 'center',
           position: 'relative',
-          color: isToday ? 'var(--purple-neon)' : 'var(--text-primary)',
+          color: isToday ? 'var(--purple-dark)' : 'var(--text-primary)',
           fontWeight: isToday ? 'bold' : 'normal',
-          border: isToday ? '2px solid var(--purple-neon)' : 'none',
-          borderRadius: '5px'
+          border: isToday ? '2px solid var(--purple-dark)' : 'none',
+          borderRadius: '5px',
+          minHeight: '60px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
         <div style={{ fontSize: '0.9rem' }}>{day}</div>
@@ -91,9 +104,9 @@ function MonthlyCalendar({ userId }) {
         <button
           onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
           style={{
-            background: 'transparent',
+            background: '#FFFFFF',
             border: '2px solid var(--purple-primary)',
-            color: 'var(--text-primary)',
+            color: 'var(--purple-dark)',
             padding: '5px 10px',
             borderRadius: '5px',
             cursor: 'pointer',
@@ -102,15 +115,15 @@ function MonthlyCalendar({ userId }) {
         >
           ◀
         </button>
-        <h3 style={{ color: 'var(--purple-neon)', fontSize: '1rem' }}>
+        <h3 style={{ color: 'var(--purple-dark)', fontSize: '1rem' }}>
           {monthName}
         </h3>
         <button
           onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
           style={{
-            background: 'transparent',
+            background: '#FFFFFF',
             border: '2px solid var(--purple-primary)',
-            color: 'var(--text-primary)',
+            color: 'var(--purple-dark)',
             padding: '5px 10px',
             borderRadius: '5px',
             cursor: 'pointer',
@@ -130,7 +143,7 @@ function MonthlyCalendar({ userId }) {
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
           <div key={day} style={{ 
             textAlign: 'center', 
-            color: 'var(--purple-light)',
+            color: 'var(--purple-dark)',
             fontSize: '0.8rem',
             fontWeight: 'bold',
             padding: '5px'

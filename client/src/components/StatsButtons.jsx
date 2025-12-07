@@ -21,8 +21,8 @@ function StatsButtons() {
         style={{ 
           width: '100%',
           background: selectedView === 'weekly' 
-            ? 'linear-gradient(135deg, var(--purple-neon) 0%, var(--purple-primary) 100%)'
-            : 'linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%)'
+            ? 'var(--purple-dark)'
+            : 'linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-primary) 100%)'
         }}
       >
         📊 WEEKLY STATS
@@ -33,8 +33,8 @@ function StatsButtons() {
         style={{ 
           width: '100%',
           background: selectedView === 'daily' 
-            ? 'linear-gradient(135deg, var(--purple-neon) 0%, var(--purple-primary) 100%)'
-            : 'linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%)'
+            ? 'var(--purple-dark)'
+            : 'linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-primary) 100%)'
         }}
       >
         📈 DAILY STATS
