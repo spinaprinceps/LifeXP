@@ -37,11 +37,10 @@ router.post('/signup', async (req, res) => {
             [name, email, hashedPassword]
         );
 
-        // Generate JWT token
+        // Generate JWT token (no expiration - lasts forever until logout)
         const token = jwt.sign(
             { id: newUser.rows[0].id, email: newUser.rows[0].email },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '24h' }
+            process.env.JWT_SECRET || 'your-secret-key'
         );
 
         res.status(201).json({
@@ -75,11 +74,10 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Generate JWT token
+        // Generate JWT token (no expiration - lasts forever until logout)
         const token = jwt.sign(
             { id: user.rows[0].id, email: user.rows[0].email },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '24h' }
+            process.env.JWT_SECRET || 'your-secret-key'
         );
 
         res.status(200).json({
