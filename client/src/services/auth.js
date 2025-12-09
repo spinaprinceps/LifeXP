@@ -3,8 +3,8 @@ import axios from 'axios';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_URL = `${API_BASE}/api/auth`;
 
-export const signup = async (name, email, password) => {
-  const response = await axios.post(`${API_URL}/signup`, { name, email, password });
+export const signup = async (username, email, password) => {
+  const response = await axios.post(`${API_URL}/signup`, { username, email, password });
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));

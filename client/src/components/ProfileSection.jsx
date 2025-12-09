@@ -115,7 +115,7 @@ function ProfileSection({ user, stats }) {
 
       {/* Username */}
       <h2 style={{ color: 'var(--purple-dark)', marginBottom: '10px', fontSize: '1.5rem' }}>
-        {user.name}
+        {user.username}
       </h2>
 
       {/* Current Level */}

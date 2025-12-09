@@ -6,7 +6,7 @@ function UserHeader({ user, stats, onLogout }) {
           <h1 className="auth-title" style={{ marginBottom: '5px', fontSize: '2rem' }}>
             LIFEXP
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Welcome, {user.name}</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Welcome, {user.username}</p>
         </div>
         <div style={{ textAlign: 'right' }}>
           <p style={{ 

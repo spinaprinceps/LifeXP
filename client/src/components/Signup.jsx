@@ -4,7 +4,7 @@ import { signup } from '../services/auth';
 
 function Signup() {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: ''
   });
@@ -25,7 +25,7 @@ function Signup() {
     setLoading(true);
 
     try {
-      await signup(formData.name, formData.email, formData.password);
+      await signup(formData.username, formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Signup failed. Please try again.');
@@ -53,11 +53,11 @@ function Signup() {
         <form onSubmit={handleSubmit}>
           <div className="mb-5">
             <label className="block text-text-primary mb-2 font-mono font-bold">
-              Name
+              Username
             </label>
             <input
               type="text"
-              name="name"
+              name="username"
               className="w-full p-3 bg-purple-50 border-2 border-primary rounded-md text-text-primary font-mono focus:outline-none focus:border-primary-dark focus:bg-white transition-all"
               placeholder="Enter your name"
               value={formData.name}
