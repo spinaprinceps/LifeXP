@@ -1,5 +1,5 @@
 services:
-  # Backend API Server (connects to external Neon database)
+  # Backend API Server (connects to Supabase)
   - type: web
     name: lifexp-backend
     env: node
@@ -11,19 +11,15 @@ services:
         value: production
       - key: PORT
         value: 3000
-      # Neon database credentials
-      - key: PGHOST
-        value: ep-broad-pond-ah8l8lpx-pooler.c-3.us-east-1.aws.neon.tech
-      - key: PGDATABASE
-        value: neondb
-      - key: PGUSER
-        value: neondb_owner
-      - key: PGPASSWORD
-        value: npg_JgDUWBKvs50y
+      # Supabase credentials
+      - key: SUPABASE_URL
+        value: https://sadpmhteicfepomaohiq.supabase.co
+      - key: SUPABASE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZHBtaHRlaWNmZXBvbWFvaGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNjczOTgsImV4cCI6MjA4MDg0MzM5OH0.JZaOSIsHDarOZx1vxNI1qwbY0oYop235CYpInOwDYuQ
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://lifexp-frontend.onrender.com
+        value: https://lifexp-tnxk.onrender.com
         
   # Frontend Static Site
   - type: web
@@ -32,10 +28,14 @@ services:
     plan: free
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: ./client/dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://lifexp-backend.onrender.com
+        value: https://lifexp-tnxk.onrender.com
