@@ -1,66 +1,130 @@
-const pool = require('../config/database');
+const supabase = require('../config/database');
 const { xpValues, calculateLevel } = require('../utils/xpSystem');
-const { checkAllHabitsCompleted, updateDailyStats } = require('../utils/streakHelper');
+
+// Helper to check if all habits are completed
+async function checkAllHabitsCompleted(user_id, date) {
+    const { data: allHabits } = await supabase
+        .from('habits')
+        .select('id')
+        .eq('user_id', user_id)
+        .eq('active', true);
+
+    const { data: completedToday } = await supabase
+        .from('habit_logs')
+        .select('habit_id')
+        .eq('user_id', user_id)
+        .eq('date', date);
+
+    return allHabits && completedToday && allHabits.length === completedToday.length && allHabits.length > 0;
+}
+
+// Helper to update daily stats
+async function updateDailyStats(user_id, date, completed_all) {
+    const yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // Get yesterday's stats
+    const { data: yesterdayStats } = await supabase
+        .from('daily_stats')
+        .select('*')
+        .eq('user_id', user_id)
+        .eq('date', yesterdayStr)
+        .single();
+
+    let newStreak = 0;
+    if (yesterdayStats && yesterdayStats.completed_all) {
+        newStreak = yesterdayStats.streak_count + (completed_all ? 1 : 0);
+    } else if (completed_all) {
+        newStreak = 1;
+    }
+
+    // Upsert today's stats
+    const { data: updatedStats } = await supabase
+        .from('daily_stats')
+        .upsert({
+            user_id,
+            date,
+            completed_all,
+            streak_count: newStreak
+        }, {
+            onConflict: 'user_id,date'
+        })
+        .select()
+        .single();
+
+    return updatedStats ? updatedStats.streak_count : newStreak;
+}
 
 // Mark habit as completed
 exports.completeHabit = async (req, res) => {
     const { id } = req.params;
     const { user_id } = req.body;
 
-    const client = await pool.connect();
-
     try {
-        await client.query('BEGIN');
-
         const today = new Date().toISOString().split('T')[0];
 
         // Check if already completed today
-        const existingLog = await client.query(
-            'SELECT * FROM habit_logs WHERE habit_id = $1 AND user_id = $2 AND date = $3',
-            [id, user_id, today]
-        );
+        const { data: existingLog } = await supabase
+            .from('habit_logs')
+            .select('*')
+            .eq('habit_id', id)
+            .eq('user_id', user_id)
+            .eq('date', today)
+            .single();
 
-        if (existingLog.rows.length > 0) {
-            await client.query('ROLLBACK');
+        if (existingLog) {
             return res.status(400).json({ error: 'Habit already completed today' });
         }
 
         // Find habit category
-        const habit = await client.query('SELECT category FROM habits WHERE id = $1', [id]);
+        const { data: habit, error: habitError } = await supabase
+            .from('habits')
+            .select('category')
+            .eq('id', id)
+            .single();
 
-        if (habit.rows.length === 0) {
-            await client.query('ROLLBACK');
+        if (habitError || !habit) {
             return res.status(404).json({ error: 'Habit not found' });
         }
 
-        const category = habit.rows[0].category;
+        const category = habit.category;
         const xpEarned = xpValues[category] || 0;
 
         // Insert into habit_logs
-        const log = await client.query(
-            'INSERT INTO habit_logs (habit_id, user_id, date) VALUES ($1, $2, $3) RETURNING *',
-            [id, user_id, today]
-        );
+        const { data: log, error: logError } = await supabase
+            .from('habit_logs')
+            .insert([{ habit_id: id, user_id, date: today }])
+            .select()
+            .single();
 
-        // Update user XP
-        const updatedUser = await client.query(
-            'UPDATE users SET xp = xp + $1 WHERE id = $2 RETURNING id, name, email, xp',
-            [xpEarned, user_id]
-        );
+        if (logError) throw logError;
 
-        const newXp = updatedUser.rows[0].xp;
+        // Get current user
+        const { data: currentUser } = await supabase
+            .from('users')
+            .select('xp')
+            .eq('id', user_id)
+            .single();
+
+        const newXp = (currentUser?.xp || 0) + xpEarned;
         const newLevel = calculateLevel(newXp);
 
-        // Update user level
-        await client.query('UPDATE users SET level = $1 WHERE id = $2', [newLevel, user_id]);
+        // Update user XP and level
+        const { data: updatedUser, error: updateError } = await supabase
+            .from('users')
+            .update({ xp: newXp, level: newLevel })
+            .eq('id', user_id)
+            .select('id, username, email, xp, level')
+            .single();
+
+        if (updateError) throw updateError;
 
         // Check if all habits completed
-        const allCompleted = await checkAllHabitsCompleted(client, user_id, today);
+        const allCompleted = await checkAllHabitsCompleted(user_id, today);
 
         // Update daily stats and streak
-        const streak = await updateDailyStats(client, user_id, today, allCompleted);
-
-        await client.query('COMMIT');
+        const streak = await updateDailyStats(user_id, today, allCompleted);
 
         res.status(200).json({
             message: 'Habit completed successfully',
@@ -68,15 +132,12 @@ exports.completeHabit = async (req, res) => {
             level: newLevel,
             streak,
             allCompleted,
-            log: log.rows[0],
-            user: { ...updatedUser.rows[0], level: newLevel }
+            log,
+            user: updatedUser
         });
     } catch (error) {
-        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({ error: 'Server error' });
-    } finally {
-        client.release();
     }
 };
 
@@ -85,60 +146,75 @@ exports.uncompleteHabit = async (req, res) => {
     const { id } = req.params;
     const { user_id } = req.body;
 
-    const client = await pool.connect();
-
     try {
-        await client.query('BEGIN');
-
         const today = new Date().toISOString().split('T')[0];
 
         // Find the log entry for today
-        const log = await client.query(
-            'SELECT * FROM habit_logs WHERE habit_id = $1 AND user_id = $2 AND date = $3',
-            [id, user_id, today]
-        );
+        const { data: log } = await supabase
+            .from('habit_logs')
+            .select('*')
+            .eq('habit_id', id)
+            .eq('user_id', user_id)
+            .eq('date', today)
+            .single();
 
-        if (log.rows.length === 0) {
-            await client.query('ROLLBACK');
+        if (!log) {
             return res.status(404).json({ error: 'No completion record found for today' });
         }
 
         // Find habit category to deduct XP
-        const habit = await client.query('SELECT category FROM habits WHERE id = $1', [id]);
+        const { data: habit } = await supabase
+            .from('habits')
+            .select('category')
+            .eq('id', id)
+            .single();
 
-        if (habit.rows.length === 0) {
-            await client.query('ROLLBACK');
+        if (!habit) {
             return res.status(404).json({ error: 'Habit not found' });
         }
 
-        const category = habit.rows[0].category;
+        const category = habit.category;
         const xpToDeduct = xpValues[category] || 0;
 
         // Delete the log entry
-        await client.query(
-            'DELETE FROM habit_logs WHERE habit_id = $1 AND user_id = $2 AND date = $3',
-            [id, user_id, today]
-        );
+        await supabase
+            .from('habit_logs')
+            .delete()
+            .eq('habit_id', id)
+            .eq('user_id', user_id)
+            .eq('date', today);
 
-        // Deduct XP from user
-        const updatedUser = await client.query(
-            'UPDATE users SET xp = GREATEST(0, xp - $1) WHERE id = $2 RETURNING id, name, email, xp',
-            [xpToDeduct, user_id]
-        );
+        // Delete the log entry
+        await supabase
+            .from('habit_logs')
+            .delete()
+            .eq('habit_id', id)
+            .eq('user_id', user_id)
+            .eq('date', today);
 
-        const newXp = updatedUser.rows[0].xp;
+        // Get current user
+        const { data: currentUser } = await supabase
+            .from('users')
+            .select('xp')
+            .eq('id', user_id)
+            .single();
+
+        const newXp = Math.max(0, (currentUser?.xp || 0) - xpToDeduct);
         const newLevel = calculateLevel(newXp);
 
-        // Update user level
-        await client.query('UPDATE users SET level = $1 WHERE id = $2', [newLevel, user_id]);
+        // Update user XP and level
+        const { data: updatedUser } = await supabase
+            .from('users')
+            .update({ xp: newXp, level: newLevel })
+            .eq('id', user_id)
+            .select('id, username, email, xp, level')
+            .single();
 
         // Recalculate if all habits are still completed
-        const allCompleted = await checkAllHabitsCompleted(client, user_id, today);
+        const allCompleted = await checkAllHabitsCompleted(user_id, today);
 
         // Update daily stats
-        const streak = await updateDailyStats(client, user_id, today, allCompleted);
-
-        await client.query('COMMIT');
+        const streak = await updateDailyStats(user_id, today, allCompleted);
 
         res.status(200).json({
             message: 'Habit uncompleted successfully',
@@ -146,14 +222,11 @@ exports.uncompleteHabit = async (req, res) => {
             level: newLevel,
             streak,
             allCompleted,
-            user: { ...updatedUser.rows[0], level: newLevel }
+            user: updatedUser
         });
     } catch (error) {
-        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({ error: 'Server error' });
-    } finally {
-        client.release();
     }
 };
 
@@ -162,17 +235,29 @@ exports.getHabitLogs = async (req, res) => {
     const { user_id } = req.params;
 
     try {
-        const logs = await pool.query(
-            `SELECT hl.*, h.name as habit_name, h.category 
-             FROM habit_logs hl 
-             JOIN habits h ON hl.habit_id = h.id 
-             WHERE hl.user_id = $1 
-             ORDER BY hl.completed_at DESC`,
-            [user_id]
-        );
+        const { data: logs, error } = await supabase
+            .from('habit_logs')
+            .select(`
+                *,
+                habits:habit_id (
+                    name,
+                    category
+                )
+            `)
+            .eq('user_id', user_id)
+            .order('completed_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Flatten the structure for easier consumption
+        const formattedLogs = logs.map(log => ({
+            ...log,
+            habit_name: log.habits?.name,
+            category: log.habits?.category
+        }));
 
         res.status(200).json({
-            logs: logs.rows
+            logs: formattedLogs
         });
     } catch (error) {
         console.error(error);

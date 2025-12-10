@@ -1,18 +1,21 @@
-const pool = require('../config/database');
+const supabase = require('../config/database');
 
 // Create habit
 exports.createHabit = async (req, res) => {
     const { user_id, name, frequency, category } = req.body;
 
     try {
-        const newHabit = await pool.query(
-            'INSERT INTO habits (user_id, name, frequency, category) VALUES ($1, $2, $3, $4) RETURNING *',
-            [user_id, name, frequency, category]
-        );
+        const { data: newHabit, error } = await supabase
+            .from('habits')
+            .insert([{ user_id, name, frequency, category }])
+            .select()
+            .single();
+
+        if (error) throw error;
 
         res.status(201).json({
             message: 'Habit created successfully',
-            habit: newHabit.rows[0]
+            habit: newHabit
         });
     } catch (error) {
         console.error(error);
@@ -26,18 +29,22 @@ exports.editHabit = async (req, res) => {
     const { name, frequency, category, active } = req.body;
 
     try {
-        const updatedHabit = await pool.query(
-            'UPDATE habits SET name = $1, frequency = $2, category = $3, active = $4 WHERE id = $5 RETURNING *',
-            [name, frequency, category, active, id]
-        );
+        const { data: updatedHabit, error } = await supabase
+            .from('habits')
+            .update({ name, frequency, category, active })
+            .eq('id', id)
+            .select()
+            .single();
 
-        if (updatedHabit.rows.length === 0) {
+        if (error) throw error;
+
+        if (!updatedHabit) {
             return res.status(404).json({ error: 'Habit not found' });
         }
 
         res.status(200).json({
             message: 'Habit updated successfully',
-            habit: updatedHabit.rows[0]
+            habit: updatedHabit
         });
     } catch (error) {
         console.error(error);
@@ -50,15 +57,22 @@ exports.deleteHabit = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deletedHabit = await pool.query('DELETE FROM habits WHERE id = $1 RETURNING *', [id]);
+        const { data: deletedHabit, error } = await supabase
+            .from('habits')
+            .delete()
+            .eq('id', id)
+            .select()
+            .single();
 
-        if (deletedHabit.rows.length === 0) {
+        if (error) throw error;
+
+        if (!deletedHabit) {
             return res.status(404).json({ error: 'Habit not found' });
         }
 
         res.status(200).json({
             message: 'Habit deleted successfully',
-            habit: deletedHabit.rows[0]
+            habit: deletedHabit
         });
     } catch (error) {
         console.error(error);
@@ -71,13 +85,16 @@ exports.getUserHabits = async (req, res) => {
     const { user_id } = req.params;
 
     try {
-        const habits = await pool.query(
-            'SELECT * FROM habits WHERE user_id = $1 ORDER BY created_at DESC',
-            [user_id]
-        );
+        const { data: habits, error } = await supabase
+            .from('habits')
+            .select('*')
+            .eq('user_id', user_id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
 
         res.status(200).json({
-            habits: habits.rows
+            habits: habits || []
         });
     } catch (error) {
         console.error(error);

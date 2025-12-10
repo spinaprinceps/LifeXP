@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const supabase = require('../config/database');
 
 // Create a new journal entry
 const createEntry = async (req, res) => {
@@ -9,11 +9,14 @@ const createEntry = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      'INSERT INTO journal_entries (user_id, content) VALUES ($1, $2) RETURNING *',
-      [user_id, content]
-    );
-    res.status(201).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .insert([{ user_id, content }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     console.error('Error creating journal entry:', error);
     res.status(500).json({ error: 'Failed to create journal entry' });
@@ -25,11 +28,14 @@ const getUserEntries = async (req, res) => {
   const { user_id } = req.params;
 
   try {
-    const result = await pool.query(
-      'SELECT * FROM journal_entries WHERE user_id = $1 ORDER BY created_at DESC',
-      [user_id]
-    );
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data || []);
   } catch (error) {
     console.error('Error fetching journal entries:', error);
     res.status(500).json({ error: 'Failed to fetch journal entries' });
@@ -41,16 +47,17 @@ const getEntryById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await pool.query(
-      'SELECT * FROM journal_entries WHERE id = $1',
-      [id]
-    );
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .select('*')
+      .eq('id', id)
+      .single();
     
-    if (result.rows.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'Journal entry not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(data);
   } catch (error) {
     console.error('Error fetching journal entry:', error);
     res.status(500).json({ error: 'Failed to fetch journal entry' });
@@ -67,16 +74,18 @@ const updateEntry = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      'UPDATE journal_entries SET content = $1 WHERE id = $2 RETURNING *',
-      [content, id]
-    );
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .update({ content })
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'Journal entry not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(data);
   } catch (error) {
     console.error('Error updating journal entry:', error);
     res.status(500).json({ error: 'Failed to update journal entry' });
@@ -88,16 +97,18 @@ const deleteEntry = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await pool.query(
-      'DELETE FROM journal_entries WHERE id = $1 RETURNING *',
-      [id]
-    );
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .delete()
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'Journal entry not found' });
     }
 
-    res.json({ message: 'Journal entry deleted successfully', entry: result.rows[0] });
+    res.json({ message: 'Journal entry deleted successfully', entry: data });
   } catch (error) {
     console.error('Error deleting journal entry:', error);
     res.status(500).json({ error: 'Failed to delete journal entry' });
